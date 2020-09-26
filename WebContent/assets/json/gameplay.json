@@ -1,0 +1,48 @@
+{
+	"useImages": false,
+	"letters": [
+		{"letterName":"ب", "audioKey": "translate_ب"},
+		{"letterName":"ص", "audioKey": "translate_ص"},
+		{"letterName":"ح", "audioKey": "translate_ح"},
+		{"letterName":"أ", "audioKey": "translate_أ"},
+		{"letterName":"ث", "audioKey": "translate_ث"},
+		{"letterName":"ج", "audioKey":"translate_ج"},
+		{"letterName":"د", "audioKey":"translate_د"},
+		{"letterName":"ش", "audioKey":"translate_ش"},
+		{"letterName":"ظ", "audioKey":"translate_ظ"},
+		{"letterName":"ع", "audioKey":"translate_ع"},
+		{"letterName":"غ", "audioKey":"translate_غ"},
+		{"letterName":"ق", "audioKey":"translate_ق"},
+		{"letterName":"ك", "audioKey":"translate_ك"},
+		{"letterName":"م", "audioKey":"translate_م"},
+		{"letterName":"ه", "audioKey":"translate_ه"},
+		{"letterName":"و", "audioKey":"translate_و"},
+		{"letterName":"ي", "audioKey":"translate_ي"}
+	],
+	"rounds": [{
+		"correctWord": "عيب",
+		"blockLetters":[ "ع","ي","ب","ج"]
+	}, {
+		"correctWord": "يعج",
+		"blockLetters":[ "ي","ج","ع","ب"]
+	}, {
+		"correctWord": "عجي",
+		"blockLetters":[ "ي","ج","ب","ع"]
+	}, {
+		"correctWord": "يجع",
+		"blockLetters":[ "ي","ب","ع","ج"]
+	}, {
+		"correctWord": "يبع",
+		"blockLetters":[ "ي","ب","ج","ع"]
+	}, {
+		"correctWord": "بجج",
+		"blockLetters":[ "ي","ع","ب","ج"]
+	}, {
+		"correctWord": "جبي",
+		"blockLetters":[ "ع","ج","ي","ب"]
+	}, {
+		"correctWord": "عيج",
+		"blockLetters":[ "ب","ج","ي","ع"]
+	}],
+	"failsNumToLose": 3
+}
