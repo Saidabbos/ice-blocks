@@ -38,13 +38,15 @@ namespace ctb.core {
         }
 
         public onLettersPlaced():boolean {
-            this.currentRound++;
-            if (this.currentRound >= this.totalRoundsNum) {
-                let score:number = this.calculateScore();
-                this.onComplete(score, score);
-                return true;
-            } else {
-                this.nextLetter();
+            if (this.correctAnswersCountThisRound == 1) {
+                this.currentRound++;
+                if (this.currentRound >= this.totalRoundsNum) {
+                    let score:number = this.calculateScore();
+                    this.onComplete(score, score);
+                    return true;
+                } else {
+                    this.nextLetter();
+                }
             }
             return false;
         }

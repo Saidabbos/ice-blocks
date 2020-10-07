@@ -10,7 +10,7 @@ module ctb.scene {
                 'prefix': 'idle',
                 'repeat': 0,
                 'frameRate': 12,
-                'atlas': 'atlas-shake-idle'
+                'atlas': 'atlas-shake'
             },
             'yelling_wrong': {
                 'start': 0,
@@ -19,7 +19,7 @@ module ctb.scene {
                 'prefix': 'yelling_wrong',
                 'repeat': 0,
                 'frameRate': 12,
-                'atlas': 'atlas-yelling_wrong'
+                'atlas': 'atlas-shake'
             }
         };
 

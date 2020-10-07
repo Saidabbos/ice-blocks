@@ -29,7 +29,7 @@ namespace ctb.screen {
                 "align": 'center'
             });
             this.instrTxt.setOrigin(0.5, 0.5);
-            this.instrTxt.setWordWrapWidth(500);
+            this.instrTxt.setWordWrapWidth(600);
             this.instrTxt.setLineSpacing(5);
 
             this._btnSoundInstruction = new Phaser.GameObjects.Image(this.scene, 800 - 105, 156 - 50, 'Sound');
