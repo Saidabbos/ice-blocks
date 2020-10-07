@@ -189,14 +189,16 @@ var ctb;
                 return this.totalRoundsNum - this.wrongAnswersCount;
             }
             onLettersPlaced() {
-                this.currentRound++;
-                if (this.currentRound >= this.totalRoundsNum) {
-                    let score = this.calculateScore();
-                    this.onComplete(score, score);
-                    return true;
-                }
-                else {
-                    this.nextLetter();
+                if (this.correctAnswersCountThisRound == 1) {
+                    this.currentRound++;
+                    if (this.currentRound >= this.totalRoundsNum) {
+                        let score = this.calculateScore();
+                        this.onComplete(score, score);
+                        return true;
+                    }
+                    else {
+                        this.nextLetter();
+                    }
                 }
                 return false;
             }
@@ -415,7 +417,7 @@ var ctb;
                 'prefix': 'idle',
                 'repeat': 0,
                 'frameRate': 12,
-                'atlas': 'atlas-shake-idle'
+                'atlas': 'atlas-shake'
             },
             'yelling_wrong': {
                 'start': 0,
@@ -424,7 +426,7 @@ var ctb;
                 'prefix': 'yelling_wrong',
                 'repeat': 0,
                 'frameRate': 12,
-                'atlas': 'atlas-yelling_wrong'
+                'atlas': 'atlas-shake'
             }
         };
         scene.Preloader = Preloader;
@@ -560,13 +562,13 @@ var ctb;
                 this.correctAudioWordDelay = null;
                 this.idleDelayedCall = null;
                 this.playIdle = () => {
+                    this.character.setOrigin(0.5, 0.5);
                     Preloader.playAnim('idle', this.character, () => {
                         this.idleDelayedCall = delayedCall(5000, () => {
                             this.playIdle();
                         });
                     });
                 };
-                this.soundGooseYes = null;
                 this.soundWrongDrop = null;
                 this.wfsnd = null;
                 this.showCompleteWindow = (score, starScore) => {
@@ -656,7 +658,7 @@ var ctb;
             }
             showGameplay() {
                 setPageBackground("bg-australia");
-                this.bgMusic = this.scene.sound.add("Bachground ambience");
+                this.bgMusic = this.scene.sound.add("Winter bg sound");
                 this.bgMusic.play();
                 this.bgMusic.loop = true;
                 this.gameplayContainer = new Phaser.GameObjects.Container(this.scene);
@@ -669,10 +671,15 @@ var ctb;
                 this.createTallies();
             }
             prepareRound() {
+                delayedCall(500, () => this.playCorrectAudio());
                 this.gameplayContainer.removeAll();
                 this.character = this.scene.add.sprite(0, 0, null);
                 this.character.setPosition(750, 310);
                 this.playIdle();
+                this.longIce = new Phaser.GameObjects.Image(this.scene, 110, 147, 'Long Ice');
+                this.longIce.setOrigin(0, 0);
+                this.longIce.alpha = 0;
+                this.gameplayContainer.add(this.longIce);
                 let randomizedLetter = Phaser.Utils.Array.Shuffle(this.gameplay.blockLetters.slice());
                 if (this.gameplay.useImages) {
                     let correctWord = new Phaser.GameObjects.Image(this.scene, 750, 180, this.gameplay.correctWord);
@@ -731,7 +738,7 @@ var ctb;
                 }
                 for (let a of this.selectableLetters) {
                     a.setSize(a["-image-"].width, a["-image-"].height);
-                    a.setInteractive( /*{cursor: 'pointer', pixelPerfect:true}*/);
+                    a.setInteractive({ cursor: 'pointer' });
                     this.scene.input.setDraggable(a);
                     a.on('pointerdown', () => {
                         a['-pointerdown-'] = true;
@@ -810,7 +817,6 @@ var ctb;
                             continue;
                         if (Math.abs(block.x - targetBlock.x) < 25 && Math.abs(block.y - targetBlock.y) < 60 && (block.y > targetBlock.y - 7)) {
                             block['-draggable-'] = false;
-                            block.disableInteractive();
                             targetBlock['alreadyFilled'] = true;
                             this.scene.tweens.add({
                                 targets: block,
@@ -838,11 +844,59 @@ var ctb;
                 }
                 this.setInputEnabled(false);
                 if (sameLettersNum == this.targetBlocks.length) {
-                    this.onCorrectAnswer();
-                    this.scene.sound.add(this.gameplay.correctWord).play();
+                    this.scene.tweens.add({
+                        targets: this.longIce,
+                        alpha: 1,
+                        duration: 250,
+                        ease: Phaser.Math.Easing.Linear,
+                    });
+                    for (let targetBlock of this.targetBlocks) {
+                        this.scene.tweens.add({
+                            targets: targetBlock['-block-']["-image-"],
+                            alpha: 0,
+                            duration: 250,
+                            ease: Phaser.Math.Easing.Linear
+                        });
+                        if (targetBlock == this.targetBlocks[1])
+                            continue;
+                        this.scene.tweens.add({
+                            targets: targetBlock['-block-'],
+                            x: this.targetBlocks[1]['x'],
+                            duration: 250,
+                            alpha: 0,
+                            ease: Phaser.Math.Easing.Sine.Out,
+                            delay: 250
+                        });
+                        delayedCall(500, () => {
+                            this.targetBlocks[1]['-block-']["-letter-"].setText(this.gameplay.correctWord);
+                        });
+                    }
+                    this.scene.sound.add("Letters joining sound").play();
+                    this.scene.sound.add("Correct click").play();
+                    delayedCall(1000, () => {
+                        this.scene.sound.add(this.gameplay.correctWord).play();
+                        this.onCorrectAnswer();
+                    });
                 }
                 else {
-                    this.onWrongAnswer();
+                    delayedCall(400, () => {
+                        for (let targetBlock of this.targetBlocks) {
+                            this.moveBridgeBackToStartPosition(targetBlock['-block-'], null);
+                        }
+                    });
+                    this.character.setOrigin(0.49, 0.515);
+                    Preloader.playAnim('yelling_wrong', this.character, () => {
+                        this.playIdle();
+                    });
+                    delayedCall(500, () => {
+                        this.onWrongAnswer();
+                        this.setInputEnabled(true);
+                        for (let targetBlock of this.targetBlocks) {
+                            targetBlock['alreadyFilled'] = false;
+                            targetBlock['-block-']['-draggable-'] = true;
+                            targetBlock["-block-"] = null;
+                        }
+                    });
                 }
             }
             moveBridgeBackToStartPosition(block, onComplete) {
@@ -850,7 +904,7 @@ var ctb;
                     targets: block,
                     x: block['startPosition'].x,
                     y: block['startPosition'].y,
-                    duration: 250,
+                    duration: 350,
                     ease: Phaser.Math.Easing.Sine.Out,
                     onComplete: () => {
                         if (onComplete)
@@ -869,17 +923,6 @@ var ctb;
                 this.tallyEmptyArray[i].visible = false;
                 this.tally[i].visible = true;
                 let completed = this.gameplay.onCorrectAnswer();
-                this.soundGooseYes = this.scene.sound.add("correct drop");
-                this.soundGooseYes.play();
-                this.scene.tweens.add({
-                    targets: this.character,
-                    x: 700,
-                    duration: 2500,
-                    ease: Phaser.Math.Easing.Sine.Out
-                });
-                Preloader.playAnim('yelling_wrong', this.character, () => {
-                    this.playIdle();
-                });
                 return completed;
             }
             onWrongAnswer() {
@@ -890,7 +933,7 @@ var ctb;
                 let lost = this.gameplay.onWrongAnswer();
                 this.soundWrongDrop = this.scene.sound.add("wrong drop");
                 this.soundWrongDrop.play();
-                this.scene.sound.add("Goose no").play();
+                // this.scene.sound.add("Goose no").play();
                 if (this.idleDelayedCall != null) {
                     destroyDelayedCall(this.idleDelayedCall);
                     this.idleDelayedCall = null;
@@ -989,7 +1032,7 @@ var ctb;
             setInputEnabled(enabled) {
                 if (enabled) {
                     for (let a of this.selectableLetters)
-                        a.setInteractive( /*{cursor: 'pointer', pixelPerfect:true}*/);
+                        a.setInteractive({ cursor: 'pointer' });
                 }
                 else {
                     for (let a of this.selectableLetters)
@@ -1035,7 +1078,7 @@ var ctb;
                     "align": 'center'
                 });
                 this.instrTxt.setOrigin(0.5, 0.5);
-                this.instrTxt.setWordWrapWidth(500);
+                this.instrTxt.setWordWrapWidth(600);
                 this.instrTxt.setLineSpacing(5);
                 this._btnSoundInstruction = new Phaser.GameObjects.Image(this.scene, 800 - 105, 156 - 50, 'Sound');
                 this._btnSoundInstruction.setInteractive({ cursor: 'pointer' });
