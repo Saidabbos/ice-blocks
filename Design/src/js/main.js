@@ -389,7 +389,7 @@ var ctb;
                 'padNum': 4,
                 'prefix': 'idle',
                 'repeat': 0,
-                'frameRate': 12,
+                'frameRate': 24,
                 'atlas': 'atlas-shake'
             },
             'yelling_wrong': {
@@ -398,7 +398,7 @@ var ctb;
                 'padNum': 4,
                 'prefix': 'yelling_wrong',
                 'repeat': 0,
-                'frameRate': 12,
+                'frameRate': 24,
                 'atlas': 'atlas-shake'
             }
         };
@@ -532,7 +532,6 @@ var ctb;
                 this.bgMusic = null;
                 this.correctAudio = null;
                 this.correctAudioWord = null;
-                this.correctAudioWordDelay = null;
                 this.idleDelayedCall = null;
                 this.playIdle = () => {
                     this.character.setOrigin(0.5, 0.5);
@@ -617,14 +616,6 @@ var ctb;
                 }
                 if (this.correctAudioWord)
                     this.correctAudioWord.stop();
-                if (this.correctAudioWordDelay) {
-                    destroyDelayedCall(this.correctAudioWordDelay);
-                    this.correctAudioWordDelay = null;
-                }
-                this.correctAudioWordDelay = delayedCall(1250, () => {
-                    this.correctAudioWord = this.scene.sound.add(this.gameplay.correctWord);
-                    this.correctAudioWord.play();
-                });
             }
             onSoundClick() {
                 this.playCorrectAudio();
@@ -720,14 +711,14 @@ var ctb;
                         a['-pointerdown-'] = false;
                         if (!a['-draggable-'])
                             return;
-                        this.moveBridgeBackToStartPosition(a, null);
+                        this.moveBridgeBackToStartPosition(a, null, true);
                     });
                     a.on('pointerout', () => {
                         if (!a['-draggable-'])
                             return;
                         if (!a['-pointerdown-'])
                             return;
-                        this.moveBridgeBackToStartPosition(a, null);
+                        this.moveBridgeBackToStartPosition(a, null, true);
                     });
                 }
                 this.createInput();
@@ -790,6 +781,7 @@ var ctb;
                             continue;
                         if (Math.abs(block.x - targetBlock.x) < 25 && Math.abs(block.y - targetBlock.y) < 60 && (block.y > targetBlock.y - 7)) {
                             block['-draggable-'] = false;
+                            this.scene.sound.add("Placing block above").play();
                             targetBlock['alreadyFilled'] = true;
                             this.scene.tweens.add({
                                 targets: block,
@@ -800,7 +792,7 @@ var ctb;
                             });
                             targetBlock["-block-"] = block;
                             this.checkTargetBlockLetters();
-                            this.scene.sound.add("drag from its spot").play();
+                            this.scene.sound.add("Placing block above").play();
                         }
                     }
                 });
@@ -846,33 +838,36 @@ var ctb;
                     }
                     this.scene.sound.add("Letters joining sound").play();
                     this.scene.sound.add("Correct click").play();
-                    delayedCall(1000, () => {
-                        this.scene.sound.add(this.gameplay.correctWord).play();
-                        this.onCorrectAnswer();
-                    });
+                    delayedCall(350, () => this.scene.sound.add("success for corect word").play());
+                    this.onCorrectAnswer();
                 }
                 else {
+                    this.scene.sound.add("Wrong attempt").play();
                     delayedCall(400, () => {
                         for (let targetBlock of this.targetBlocks) {
-                            this.moveBridgeBackToStartPosition(targetBlock['-block-'], null);
+                            this.moveBridgeBackToStartPosition(targetBlock['-block-'], null, false);
                         }
+                        delayedCall(100, () => this.scene.sound.add("all three blocks move back after wrong").play());
                     });
                     this.character.setOrigin(0.49, 0.515);
                     Preloader.playAnim('yelling_wrong', this.character, () => {
                         this.playIdle();
                     });
+                    this.scene.sound.add("Snake animation sfx").play();
                     delayedCall(500, () => {
                         this.onWrongAnswer();
-                        this.setInputEnabled(true);
                         for (let targetBlock of this.targetBlocks) {
                             targetBlock['alreadyFilled'] = false;
                             targetBlock['-block-']['-draggable-'] = true;
                             targetBlock["-block-"] = null;
                         }
                     });
+                    delayedCall(1750, () => {
+                        this.setInputEnabled(true);
+                    });
                 }
             }
-            moveBridgeBackToStartPosition(block, onComplete) {
+            moveBridgeBackToStartPosition(block, onComplete, playSound) {
                 this.scene.tweens.add({
                     targets: block,
                     x: block['startPosition'].x,
@@ -886,7 +881,9 @@ var ctb;
                 });
                 if (Phaser.Math.Distance.Between(block['startPosition'].x, block['startPosition'].y, block.x, block.y) > 20) {
                     delayedCall(100, () => {
-                        this.scene.sound.add("drag from its spot").play();
+                        if (playSound) {
+                            this.scene.sound.add("block goes back when released").play();
+                        }
                     });
                 }
                 this.placeAppleOverBuckets(block);
@@ -929,7 +926,7 @@ var ctb;
                     }
                     return;
                 }
-                let startX = 18;
+                let startX = 26;
                 let startY = 148;
                 let dy = 34;
                 let tallyEmptyArrayPositions = [];

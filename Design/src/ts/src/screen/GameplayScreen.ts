@@ -60,7 +60,6 @@ namespace ctb.screen {
 
         private correctAudio = null;
         private correctAudioWord = null;
-        private correctAudioWordDelay = null;
         private playCorrectAudio():void {
             if (this.correctAudio) {
                 this.correctAudio.stop();
@@ -72,14 +71,6 @@ namespace ctb.screen {
             }
 
             if (this.correctAudioWord) this.correctAudioWord.stop();
-            if (this.correctAudioWordDelay) {
-                destroyDelayedCall(this.correctAudioWordDelay);
-                this.correctAudioWordDelay = null;
-            }
-            this.correctAudioWordDelay = delayedCall(1250, ()=>{
-                this.correctAudioWord = this.scene.sound.add(this.gameplay.correctWord);
-                this.correctAudioWord.play();
-            });
         }
 
         public onSoundClick(): void {
@@ -201,12 +192,12 @@ namespace ctb.screen {
                 a.on('pointerup', () => {
                     a['-pointerdown-'] = false;
                     if (!a['-draggable-']) return;
-                    this.moveBridgeBackToStartPosition(a, null);
+                    this.moveBridgeBackToStartPosition(a, null, true);
                 });
                 a.on('pointerout', () => {
                     if (!a['-draggable-']) return;
                     if (!a['-pointerdown-']) return;
-                    this.moveBridgeBackToStartPosition(a, null);
+                    this.moveBridgeBackToStartPosition(a, null, true);
                 });
             }
 
@@ -276,6 +267,7 @@ namespace ctb.screen {
 
                     if (Math.abs(block.x - targetBlock.x) < 25 && Math.abs(block.y - targetBlock.y) < 60 && (block.y > targetBlock.y - 7)) {
                         block['-draggable-'] = false;
+                        this.scene.sound.add("Placing block above").play();
 
                         targetBlock['alreadyFilled'] = true;
 
@@ -291,7 +283,7 @@ namespace ctb.screen {
 
                         this.checkTargetBlockLetters();
 
-                        this.scene.sound.add("drag from its spot").play();
+                        this.scene.sound.add("Placing block above").play();
                     }
                 }
             });
@@ -342,25 +334,25 @@ namespace ctb.screen {
                 }
                 this.scene.sound.add("Letters joining sound").play();
                 this.scene.sound.add("Correct click").play();
-                delayedCall(1000, ()=>{
-                    this.scene.sound.add(this.gameplay.correctWord).play();
-                    this.onCorrectAnswer();
-                });
+                delayedCall(350, ()=>this.scene.sound.add("success for corect word").play());
+                this.onCorrectAnswer();
             } else {
+                this.scene.sound.add("Wrong attempt").play();
                 delayedCall(400, ()=>{
                     for (let targetBlock of this.targetBlocks) {
-                        this.moveBridgeBackToStartPosition(targetBlock['-block-'], null);
+                        this.moveBridgeBackToStartPosition(targetBlock['-block-'], null, false);
                     }
+                    delayedCall(100, ()=>this.scene.sound.add("all three blocks move back after wrong").play());
                 });
 
                 this.character.setOrigin(0.49, 0.515);
                 Preloader.playAnim('yelling_wrong', this.character, ()=>{
                     this.playIdle();
                 });
+                this.scene.sound.add("Snake animation sfx").play();
 
                 delayedCall(500, ()=>{
                     this.onWrongAnswer();
-                    this.setInputEnabled(true);
 
                     for (let targetBlock of this.targetBlocks) {
                         targetBlock['alreadyFilled'] = false;
@@ -368,10 +360,14 @@ namespace ctb.screen {
                         targetBlock["-block-"] = null;
                     }
                 });
+
+                delayedCall(1750, ()=>{
+                    this.setInputEnabled(true);
+                });
             }
         }
 
-        private moveBridgeBackToStartPosition(block, onComplete):void {
+        private moveBridgeBackToStartPosition(block, onComplete, playSound):void {
             this.scene.tweens.add({
                 targets: block,
                 x: block['startPosition'].x,
@@ -384,7 +380,9 @@ namespace ctb.screen {
             });
             if (Phaser.Math.Distance.Between(block['startPosition'].x, block['startPosition'].y, block.x, block.y) > 20) {
                 delayedCall(100, ()=>{
-                    this.scene.sound.add("drag from its spot").play();
+                    if (playSound) {
+                        this.scene.sound.add("block goes back when released").play();
+                    }
                 });
 
             }
@@ -441,7 +439,7 @@ namespace ctb.screen {
                 return;
             }
 
-            let startX: number = 18;
+            let startX: number = 26;
             let startY: number = 148;
             let dy: number = 34;
             let tallyEmptyArrayPositions = [];
