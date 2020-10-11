@@ -9,7 +9,7 @@ module ctb.scene {
                 'padNum': 4,
                 'prefix': 'idle',
                 'repeat': 0,
-                'frameRate': 12,
+                'frameRate': 24,
                 'atlas': 'atlas-shake'
             },
             'yelling_wrong': {
@@ -18,7 +18,7 @@ module ctb.scene {
                 'padNum': 4,
                 'prefix': 'yelling_wrong',
                 'repeat': 0,
-                'frameRate': 12,
+                'frameRate': 24,
                 'atlas': 'atlas-shake'
             }
         };

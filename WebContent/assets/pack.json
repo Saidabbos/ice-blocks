@@ -205,7 +205,13 @@
       {"type":"audio","key":"Fail - close one","url":["assets/sound/mp3/Fail - close one.mp3"],"autoDecode":true},
       {"type":"audio","key":"next_round","url":["assets/sound/mp3/next_round.mp3"],"autoDecode":true},
       {"type":"audio","key":"Correct click","url":["assets/sound/mp3/Correct click.mp3"],"autoDecode":true},
-      {"type":"audio","key":"Letters joining sound","url":["assets/sound/mp3/Letters joining sound.mp3"],"autoDecode":true}
+      {"type":"audio","key":"Letters joining sound","url":["assets/sound/mp3/Letters joining sound.mp3"],"autoDecode":true},
+      {"type":"audio","key":"Wrong attempt","url":["assets/sound/mp3/Wrong attempt.mp3"],"autoDecode":true},
+      {"type":"audio","key":"block goes back when released","url":["assets/sound/mp3/block goes back when released.mp3"],"autoDecode":true},
+      {"type":"audio","key":"Placing block above","url":["assets/sound/mp3/Placing block above.mp3"],"autoDecode":true},
+      {"type":"audio","key":"Snake animation sfx","url":["assets/sound/mp3/Snake animation sfx.mp3"],"autoDecode":true},
+      {"type":"audio","key":"all three blocks move back after wrong","url":["assets/sound/mp3/all three blocks move back after wrong.mp3"],"autoDecode":true},
+      {"type":"audio","key":"success for corect word","url":["assets/sound/mp3/success for corect word.mp3"],"autoDecode":true}
     ]
   },
   "meta": {
