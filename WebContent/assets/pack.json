@@ -211,7 +211,8 @@
       {"type":"audio","key":"Placing block above","url":["assets/sound/mp3/Placing block above.mp3"],"autoDecode":true},
       {"type":"audio","key":"Snake animation sfx","url":["assets/sound/mp3/Snake animation sfx.mp3"],"autoDecode":true},
       {"type":"audio","key":"all three blocks move back after wrong","url":["assets/sound/mp3/all three blocks move back after wrong.mp3"],"autoDecode":true},
-      {"type":"audio","key":"success for corect word","url":["assets/sound/mp3/success for corect word.mp3"],"autoDecode":true}
+      {"type":"audio","key":"success for corect word","url":["assets/sound/mp3/success for corect word.mp3"],"autoDecode":true},
+      {"type":"audio","key":"placed- wrong- snake - blocks go back","url":["assets/sound/mp3/placed- wrong- snake - blocks go back.mp3"],"autoDecode":true}
     ]
   },
   "meta": {

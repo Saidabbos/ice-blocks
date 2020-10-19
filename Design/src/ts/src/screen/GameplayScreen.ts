@@ -188,6 +188,7 @@ namespace ctb.screen {
 
                 a.on('pointerdown', () => {
                     a['-pointerdown-'] = true;
+                    if (a['-draggable-']) this.scene.sound.add("drag from its spot").play();
                 });
                 a.on('pointerup', () => {
                     a['-pointerdown-'] = false;
@@ -267,7 +268,6 @@ namespace ctb.screen {
 
                     if (Math.abs(block.x - targetBlock.x) < 25 && Math.abs(block.y - targetBlock.y) < 60 && (block.y > targetBlock.y - 7)) {
                         block['-draggable-'] = false;
-                        this.scene.sound.add("Placing block above").play();
 
                         targetBlock['alreadyFilled'] = true;
 
@@ -282,8 +282,6 @@ namespace ctb.screen {
                         targetBlock["-block-"] = block;
 
                         this.checkTargetBlockLetters();
-
-                        this.scene.sound.add("Placing block above").play();
                     }
                 }
             });
@@ -295,7 +293,10 @@ namespace ctb.screen {
         private checkTargetBlockLetters():void {
             let sameLettersNum:number = 0;
             for (let targetBlock of this.targetBlocks) {
-                if (!targetBlock['-block-']) return;
+                if (!targetBlock['-block-']) {
+                    this.scene.sound.add("Placing block above").play();
+                    return;
+                }
 
                 if (targetBlock["-letter-text"] == targetBlock['-block-']["-letter-text"]) {
                     sameLettersNum++;
@@ -303,6 +304,8 @@ namespace ctb.screen {
             }
             this.setInputEnabled(false);
             if (sameLettersNum == this.targetBlocks.length) {
+                this.scene.sound.add("Placing block above").play();
+
                 this.scene.tweens.add({
                     targets: this.longIce,
                     alpha: 1,
@@ -333,25 +336,30 @@ namespace ctb.screen {
                     });
                 }
                 this.scene.sound.add("Letters joining sound").play();
-                this.scene.sound.add("Correct click").play();
-                delayedCall(350, ()=>this.scene.sound.add("success for corect word").play());
+                delayedCall(250, ()=>this.scene.sound.add("Correct click").play())
+                delayedCall(1000, ()=>this.scene.sound.add("success for corect word").play());
                 this.onCorrectAnswer();
             } else {
-                this.scene.sound.add("Wrong attempt").play();
-                delayedCall(400, ()=>{
+
+                this.scene.sound.add("placed- wrong- snake - blocks go back").play();
+
+                // this.scene.sound.add("Wrong attempt").play();
+                delayedCall(2400, ()=>{
                     for (let targetBlock of this.targetBlocks) {
                         this.moveBridgeBackToStartPosition(targetBlock['-block-'], null, false);
                     }
-                    delayedCall(100, ()=>this.scene.sound.add("all three blocks move back after wrong").play());
+                    // delayedCall(100, ()=>this.scene.sound.add("all three blocks move back after wrong").play());
                 });
 
-                this.character.setOrigin(0.49, 0.515);
-                Preloader.playAnim('yelling_wrong', this.character, ()=>{
-                    this.playIdle();
+                delayedCall(1700, ()=>{
+                    this.character.setOrigin(0.49, 0.515);
+                    Preloader.playAnim('yelling_wrong', this.character, ()=>{
+                        this.playIdle();
+                    });
+                    // this.scene.sound.add("Snake animation sfx").play();
                 });
-                this.scene.sound.add("Snake animation sfx").play();
 
-                delayedCall(500, ()=>{
+                delayedCall(2500, ()=>{
                     this.onWrongAnswer();
 
                     for (let targetBlock of this.targetBlocks) {
@@ -361,7 +369,7 @@ namespace ctb.screen {
                     }
                 });
 
-                delayedCall(1750, ()=>{
+                delayedCall(2750, ()=>{
                     this.setInputEnabled(true);
                 });
             }
@@ -409,13 +417,17 @@ namespace ctb.screen {
 
             let lost:boolean = this.gameplay.onWrongAnswer();
 
-            this.soundWrongDrop = this.scene.sound.add("wrong drop");
-            this.soundWrongDrop.play();
+            // this.soundWrongDrop = this.scene.sound.add("wrong drop");
+            // this.soundWrongDrop.play();
             // this.scene.sound.add("Goose no").play();
 
             if (this.idleDelayedCall != null) {
                 destroyDelayedCall(this.idleDelayedCall);
                 this.idleDelayedCall = null;
+            }
+
+            if (!lost) {
+                delayedCall(650, ()=>this.playCorrectAudio());
             }
 
             return lost;
