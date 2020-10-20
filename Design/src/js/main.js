@@ -853,7 +853,7 @@ var ctb;
                         }
                         // delayedCall(100, ()=>this.scene.sound.add("all three blocks move back after wrong").play());
                     });
-                    delayedCall(1700, () => {
+                    delayedCall(1500, () => {
                         this.character.setOrigin(0.49, 0.515);
                         Preloader.playAnim('yelling_wrong', this.character, () => {
                             this.playIdle();
