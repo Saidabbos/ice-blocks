@@ -332,7 +332,11 @@ namespace ctb.screen {
                         delay: 250
                     });
                     delayedCall(500, ()=>{
-                        this.targetBlocks[1]['-block-']["-letter-"].setText(this.gameplay.correctWord);
+                        if (this.gameplay.useImages) {
+                            (this.targetBlocks[1]['-block-']["-letter-"] as Phaser.GameObjects.Image).setTexture(this.gameplay.correctWord);
+                        } else {
+                            (this.targetBlocks[1]['-block-']["-letter-"] as Phaser.GameObjects.Text).setText(this.gameplay.correctWord);
+                        }
                     });
                 }
                 this.scene.sound.add("Letters joining sound").play();
