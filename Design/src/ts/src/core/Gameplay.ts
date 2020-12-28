@@ -22,6 +22,14 @@ namespace ctb.core {
 
         public useImages:boolean;
 
+        private wordsLetters:object;
+        public getCorrectWordCharAt(at:number):string {
+            return this.wordsLetters[this.correctWord][at];
+        }
+        public getCorrectWordLettersNumber():number {
+            return this.wordsLetters[this.correctWord].length;
+        }
+
         constructor() {
             this.failsNumToLose = Number(game.cache.json.get('gameplay')["failsNumToLose"]);
             this.useImages = Boolean(game.cache.json.get('gameplay')["useImages"]);
@@ -126,6 +134,7 @@ namespace ctb.core {
             this.setupCallbacks(null, null, null);
 
             let json = game.cache.json.get('gameplay');
+            this.wordsLetters = json["wordsLetters"];
             this.rounds = json["rounds"].slice();
             this.totalRoundsNum = this.rounds.length;
             this.letters = json["letters"].slice();

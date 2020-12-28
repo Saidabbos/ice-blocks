@@ -142,13 +142,13 @@ namespace ctb.screen {
 
             this.selectableLetters = [];
             this.targetBlocks = [];
-            for (let i:number = 0; i < this.gameplay.correctWord.length; i++) {
+            for (let i:number = 0; i < this.gameplay.getCorrectWordLettersNumber(); i++) {
                 let b = {
                     x:174 + i * 133, y:215
                 };
                 b['alreadyFilled'] = false;
                 this.targetBlocks.push(b);
-                b["-letter-text"] = this.gameplay.correctWord.charAt(this.gameplay.correctWord.length-1-i);
+                b["-letter-text"] = this.gameplay.getCorrectWordCharAt(i);
                 b["-block-"] = null;
             }
             for (let i:number = 0; i < randomizedLetter.length; i++) {
