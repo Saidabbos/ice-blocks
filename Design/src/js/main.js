@@ -180,6 +180,12 @@ var ctb;
                 this.failsNumToLose = Number(game.cache.json.get('gameplay')["failsNumToLose"]);
                 this.useImages = Boolean(game.cache.json.get('gameplay')["useImages"]);
             }
+            getCorrectWordCharAt(at) {
+                return this.wordsLetters[this.correctWord][at];
+            }
+            getCorrectWordLettersNumber() {
+                return this.wordsLetters[this.correctWord].length;
+            }
             setupCallbacks(onComplete, onLose, onNewRound) {
                 this.onComplete = onComplete;
                 this.onLose = onLose;
@@ -264,6 +270,7 @@ var ctb;
                 this.nextLetterDelay = 0;
                 this.setupCallbacks(null, null, null);
                 let json = game.cache.json.get('gameplay');
+                this.wordsLetters = json["wordsLetters"];
                 this.rounds = json["rounds"].slice();
                 this.totalRoundsNum = this.rounds.length;
                 this.letters = json["letters"].slice();
@@ -690,13 +697,13 @@ var ctb;
                 }
                 this.selectableLetters = [];
                 this.targetBlocks = [];
-                for (let i = 0; i < this.gameplay.correctWord.length; i++) {
+                for (let i = 0; i < this.gameplay.getCorrectWordLettersNumber(); i++) {
                     let b = {
                         x: 174 + i * 133, y: 215
                     };
                     b['alreadyFilled'] = false;
                     this.targetBlocks.push(b);
-                    b["-letter-text"] = this.gameplay.correctWord.charAt(this.gameplay.correctWord.length - 1 - i);
+                    b["-letter-text"] = this.gameplay.getCorrectWordCharAt(i);
                     b["-block-"] = null;
                 }
                 for (let i = 0; i < randomizedLetter.length; i++) {
