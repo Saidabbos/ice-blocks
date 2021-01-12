@@ -32,7 +32,7 @@ namespace ctb.screen {
             this._gameStage = new Phaser.GameObjects.Image(this.scene, game.scale.width / 2, game.scale.height / 2, 'BG');
             this._gameStage.setOrigin(0.5, 0.5);
             this._gameStage.setScale(1.02);
-            this._gameStage.setInteractive();
+            // this._gameStage.setInteractive();
             this.add(this._gameStage);
 
             this._btnClose = new Phaser.GameObjects.Image(this.scene, 1025-105, 100-50,'x Button');
@@ -506,7 +506,7 @@ namespace ctb.screen {
 
             this.instructionPage = new InstructionPage(this.scene, (target) => {
                 playBtnClickAnim(target);
-                this.remove(this.instructionPage);
+                this.instructionPage.destroy(true);
                 this.showGameplay();
 
                 if (this.wfsnd) {
@@ -530,12 +530,12 @@ namespace ctb.screen {
 
             this.areYouSureWindow = new AreYouSureWindow(this.scene, ()=> {
                 this.scene.tweens.resumeAll();
-                this.remove(this.areYouSureWindow);
+                this.areYouSureWindow.destroy(true);
                 this.destroyGameplay();
                 this.showInstructionPage();
             },()=> {
                 this.scene.tweens.resumeAll();
-                this.remove(this.areYouSureWindow);
+                this.areYouSureWindow.destroy(true);
                 this.unpauseSounds();
                 resumeAllDelayedCalls();
                 setPageBackground("bg-australia");
@@ -549,7 +549,7 @@ namespace ctb.screen {
             }, (target) => {
                 playBtnClickAnim(target);
                 this.destroyGameplay();
-                this.remove(completeWindow);
+                completeWindow.destroy(true);
                 this.showInstructionPage();
             }, (target) => {
                 playBtnClickAnim(target);
@@ -571,7 +571,7 @@ namespace ctb.screen {
             }, (target) => {
                 playBtnClickAnim(target);
                 this.destroyGameplay();
-                this.remove(tryAgainWindow);
+                tryAgainWindow.destroy(true);
                 this.showInstructionPage();
             });
             this.setInputEnabled(false);
