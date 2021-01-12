@@ -1191,4 +1191,3 @@ var ctb;
         screen.TryAgainWindow = TryAgainWindow;
     })(screen = ctb.screen || (ctb.screen = {}));
 })(ctb || (ctb = {}));
-//# sourceMappingURL=main.js.map
